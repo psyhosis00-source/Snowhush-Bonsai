@@ -1,0 +1,31 @@
+name: Build Snowhush for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        run: rustup toolchain install stable --profile minimal
+
+      - name: Build Snowhush
+        working-directory: windows
+        run: cargo +stable build --release --bin Snowhush --target x86_64-pc-windows-msvc
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: Snowhush-Windows-x64
+          path: windows/target/x86_64-pc-windows-msvc/release/Snowhush.exe
+          if-no-files-found: error
